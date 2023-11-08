@@ -1,5 +1,9 @@
 # 遺伝研スパコンでDDBJ Searchを検索するCLIツール
 [DDBJ Search](https://ddbj.nig.ac.jp/search) はINSDC BioProject/BioSample/SRA, JGA データをアクセッション番号やキーワードで検索するサービスです。本ツールは遺伝研スパコン内でDDBJ Searchを検索するためのCLIツールです。
+
+本ツールは /lustre7/software/experimental/ddbjsearch_cli/bin/ にインストールされています。
+PATH環境変数に /lustre7/software/experimental/ddbjsearch_cli/bin を追加してご利用ください。
+
 ## ddbjsearch_cli.py
 DDBJSearchのElastic Searchを検索してaccession番号のリストを取得します。
 
@@ -9,7 +13,7 @@ accession番号の出力が標準出力、タイプ別件数の出力が標準�
 
 ### help
 ```
-$ ./ddbjsearch_cli.py --help
+$ ddbjsearch_cli.py --help
 usage: ddbjsearch_cli.py [-h] [-q QUERY]
                          [-t {biosample,bioproject,sra-run,sra-experiment,sra-sample,sra-submission,sra-study,sra-analysis,jga-dataset,jga-study,jga-policy,jga-dac}]
                          [-o ORGANISM] [-s START] [-e END] [-j] [-c COUNT]
@@ -35,7 +39,7 @@ optional arguments:
 ### 実行例
 "metagenomic analysis of human intestinal bacteria"で検索
 ```
-$ ./ddbjsearch_cli.py -q "metagenomic analysis of human intestinal bacteria"
+$ ddbjsearch_cli.py -q "metagenomic analysis of human intestinal bacteria"
 PRJDB6814
 PRJNA515425
 PRJNA386500
@@ -75,7 +79,7 @@ jga-dac: 0
 ```
 タイプ sra-studyで絞り込み
 ```
-$ ./ddbjsearch_cli.py -q "metagenomic analysis of human intestinal bacteria" -t sra-study
+$ ddbjsearch_cli.py -q "metagenomic analysis of human intestinal bacteria" -t sra-study
 SRP126261
 SRP179725
 ERP019886
@@ -101,7 +105,7 @@ jga-dac: 0
 ```
 published dateで絞り込み
 ```
-$ ./ddbjsearch_cli.py -q "metagenomic analysis of human intestinal bacteria" -t sra-study -s 2020-01-01 -e 2021-01-01
+$ ddbjsearch_cli.py -q "metagenomic analysis of human intestinal bacteria" -t sra-study -s 2020-01-01 -e 2021-01-01
 SRP324298
 SRP350910
 
@@ -120,7 +124,7 @@ jga-dac: 0
 ```
 検索結果をjsonで出力
 ```
-$ ./ddbjsearch_cli.py -q "metagenomic analysis of human intestinal bacteria" -t sra-study -s 2020-01-01 -e 2021-01-01 -j
+$ ddbjsearch_cli.py -q "metagenomic analysis of human intestinal bacteria" -t sra-study -s 2020-01-01 -e 2021-01-01 -j
 {
     "took": 144,
     "responses": [
@@ -204,7 +208,7 @@ jga-dac: 0
 
 ### help
 ```
-$ ./get_json.py --help
+$ get_json.py --help
 usage: get_json.py [-h] [-p] accession
 
 positional arguments:
@@ -216,7 +220,7 @@ optional arguments:
 ```
 ### 実行例
 ```
-$ ./get_json.py -p SRP324298
+$ get_json.py -p SRP324298
 {
     "identifier": "SRP324298",
     "title": "Novel Gut Microbiota Modulator, Which Markedly Increases in Akkermansia Muciniphila Occupancy, Ameliorates Experimental Colitis in Rats",
@@ -327,7 +331,7 @@ $ ./get_json.py -p SRP324298
 accession番号を1個だけ処理する作りのため、ddbjsearch_cli.pyの出力したaccession番号のリストからjsonファイルを個別に取得する場合は以下のようにfor文を使います。
 ```
 $ mkdir test
-$ for i in `./ddbjsearch_cli.py -q "metagenomic analysis of human intestinal bacteria" -t sra-study`; do ./get_json.py $i > test/$i.json; done
+$ for i in `ddbjsearch_cli.py -q "metagenomic analysis of human intestinal bacteria" -t sra-study`; do get_json.py $i > test/$i.json; done
 
 biosample: 0
 bioproject: 0
@@ -355,7 +359,7 @@ $ ls -l test
 ```
 ddbjsearch_cli.pyの出力をファイルに保存してからget_json.pyに回す場合も同様にfor文を使います。
 ```
-$ ./ddbjsearch_cli.py -q "metagenomic analysis of human intestinal bacteria" -t sra-study > test_list.txt
+$ ddbjsearch_cli.py -q "metagenomic analysis of human intestinal bacteria" -t sra-study > test_list.txt
 
 biosample: 0
 bioproject: 0
@@ -379,7 +383,7 @@ SRP100462
 SRP324298
 SRP057027
 SRP350910
-$ for i in `cat test_list.txt`; do ./get_json.py $i > test/$i.json; done
+$ for i in `cat test_list.txt`; do get_json.py $i > test/$i.json; done
 $ ls -l test
 合計 5
 -rw-r--r-- 1 y-okuda users  94997 11月  7 15:27 ERP019886.json
@@ -400,7 +404,7 @@ DDBJSearchのAPIサーバから取得したjsonを標準入力から読み、dow
 
 ### help
 ```
- ./get_download_url.py --help
+$ get_download_url.py --help
 usage: get_download_url.py [-h] [-t {meta,sra,fastq}]
 
 DDBJSearchのAPIサーバから取得したjsonを標準入力から読み（1行1json）、downloadUrl中の指定されたtypeのurlを抽出します
@@ -415,25 +419,25 @@ optional arguments:
 
 typeを指定してmeta, sraまたはfastqのURLを取得します。typeを指定しない場合はmetaのURLを取得します。
 ```
-$ cat test/ERP019886.json | ./get_download_url.py 
+$ cat test/ERP019886.json | get_download_url.py 
 https://ddbj.nig.ac.jp/public/ddbj_database/dra/fastq/ERA903/ERA903431/ERA903431.study.xml
 ```
 get_json.pyの出力をパイプで受けて実行できます。
 ```
-$ ./get_json.py SRR14830546 | ./get_download_url.py -t meta
+$ get_json.py SRR14830546 | ./get_download_url.py -t meta
 https://ddbj.nig.ac.jp/public/ddbj_database/dra/fastq/SRA124/SRA1245460/SRA1245460.run.xml
-$ ./get_json.py SRR14830546 | ./get_download_url.py -t sra
+$ get_json.py SRR14830546 | ./get_download_url.py -t sra
 https://ddbj.nig.ac.jp/public/ddbj_database/dra/sralite/ByExp/litesra/SRX/SRX111/SRX11159521/SRR14830546/SRR14830546.sra
-$ ./get_json.py SRR14830546 | ./get_download_url.py -t fastq
+$ get_json.py SRR14830546 | ./get_download_url.py -t fastq
 https://ddbj.nig.ac.jp/public/ddbj_database/dra/fastq/SRA124/SRA1245460/SRX11159521
 ```
 get_json.pyで-pオプションを付けるとエラーになります。
 ```
-$ ./get_json.py -p SRR14830546 | ./get_download_url.py -t meta
+$ get_json.py -p SRR14830546 | ./get_download_url.py -t meta
 Traceback (most recent call last):
-  File "./get_download_url.py", line 26, in <module>
+  File "get_download_url.py", line 26, in <module>
     main()
-  File "./get_download_url.py", line 11, in main
+  File "get_download_url.py", line 11, in main
     json_obj = json.loads(line)
   File "/opt/pkg/python/3.7.2/lib/python3.7/json/__init__.py", line 348, in loads
     return _default_decoder.decode(s)
@@ -451,16 +455,16 @@ get_download_url.pyで取得したURLを遺伝研スパコン内のパスに変�
 
 ### 実行例
 ```
-$ ./get_json.py SRR14830546 | ./get_download_url.py -t fastq | ./conv_sc_path.py 
+$ get_json.py SRR14830546 | get_download_url.py -t fastq | conv_sc_path.py 
 /usr/local/shared_data/dra/fastq/SRA124/SRA1245460/SRX11159521
 ```
 fastqのURLはディレクトリを指していますが、以下の実行結果のようにディレクトリが存在しない場合があります。
 ```
-$ ./get_json.py SRR14830546 | ./get_download_url.py -t meta | ./conv_sc_path.py | xargs -i ls -l {}
+$ get_json.py SRR14830546 | get_download_url.py -t meta | conv_sc_path.py | xargs -i ls -l {}
 -rw-r--r-- 1 tracesys tracesys 47249 10月 23 20:49 /usr/local/shared_data/dra/fastq/SRA124/SRA1245460/SRA1245460.run.xml
-$ ./get_json.py SRR14830546 | ./get_download_url.py -t sra | ./conv_sc_path.py | xargs -i ls -l {}
+$ get_json.py SRR14830546 | get_download_url.py -t sra | conv_sc_path.py | xargs -i ls -l {}
 -rw-r--r-- 1 tracesys tracesys 13472673  6月 18  2021 /usr/local/shared_data/dra/sralite/ByExp/litesra/SRX/SRX111/SRX11159521/SRR14830546/SRR14830546.sra
-$ ./get_json.py SRR14830546 | ./get_download_url.py -t fastq | ./conv_sc_path.py | xargs -i ls -l {}
+$ get_json.py SRR14830546 | get_download_url.py -t fastq | conv_sc_path.py | xargs -i ls -l {}
 ls: /usr/local/shared_data/dra/fastq/SRA124/SRA1245460/SRX11159521 にアクセスできません: そのようなファイルやディレクトリはありません
 $ ls /usr/local/shared_data/dra/fastq/SRA124/SRA1245460/
 SRA1245460.experiment.xml  SRA1245460.run.xml  SRA1245460.sample.xml  SRA1245460.study.xml  SRA1245460.submission.xml
