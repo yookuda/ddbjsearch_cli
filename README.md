@@ -1,4 +1,5 @@
-# 遺伝研スパコンでDDBJSearchを検索するCLIツール
+# 遺伝研スパコンでDDBJ Searchを検索するCLIツール
+[DDBJ Search](https://ddbj.nig.ac.jp/search) はINSDC BioProject/BioSample/SRA, JGA データをアクセッション番号やキーワードで検索するサービスです。本ツールは遺伝研スパコン内でDDBJ Searchを検索するためのCLIツールです。
 ## ddbjsearch_cli.py
 DDBJSearchのElastic Searchを検索してaccession番号のリストを取得します。
 
